@@ -18,25 +18,37 @@ import Search from './components/Search.jsx'
 function App() {
    const [searchTerm, setSearchTerm] = useState('');
    const [errorMessage , setErrorMessage] = useState('');
+   const [MovieList, setMovieList] = useState()
     
    const fetchMovies = async () => {
-     try {
-       const endpoint = `${API_BASE_URL}/search/movie?query=${searchTerm}&language=en-US&include_adult=false`;
+     
+    
+    
+    try {
+          const endpoint = `${API_BASE_URL}/discover/movie?sort_by=popularity.desc`;
         const response = await fetch(endpoint, API_OPTIONS);
+
+
         if(!response.ok){
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-
         const data = await response.json();
         console.log(data);
+        if(data.Response === 'False'){
+          setErrorMessage(data.Error || 'Something went wrong');
+          setMovieList([]);
+          return;
+        }
+        setMovieList(data.results || []);
      } catch (error) {
-      console.log(`error fetching movies: ${errorMessage}`);
+      console.log(`error fetching movies: ${error}`);
+      console.log(errorMessage);
       setErrorMessage(`Error fetching movies. Pleasev try again later.`);
      }
    }
    //API -> Application Programming Interface - a set of rules that allows one software aplication to interact with another
-   useEffect((fetchMovies) => {
-    fetchMovies();
+   useEffect(() => {
+
    },[])
 
   return (
@@ -45,7 +57,7 @@ function App() {
       <div className="wrapper">
           <header>
             <img src='../public/hero.png' alt='Hero Banner'/>
-            <h1>Find <span className='text-gradient'>Movies</span>You'll Enjoy Without the Hassle</h1>
+            <h1>Find <span className='text-gradient'>Animes</span>You'll Enjoy Without the Hassle</h1>
             <Search searchTerm={searchTerm} setSearchTerm ={setSearchTerm} />
           </header>
           <section className='movie-list'>
